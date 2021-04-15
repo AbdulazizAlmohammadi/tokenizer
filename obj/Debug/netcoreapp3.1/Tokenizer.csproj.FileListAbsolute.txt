@@ -1,0 +1,13 @@
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.exe
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.deps.json
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.runtimeconfig.json
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.runtimeconfig.dev.json
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.dll
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\bin\Debug\netcoreapp3.1\Tokenizer.pdb
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.csprojAssemblyReference.cache
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.AssemblyInfoInputs.cache
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.AssemblyInfo.cs
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.csproj.CoreCompileInputs.cache
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.dll
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.pdb
+C:\Users\3zAl7arbi\source\repos\Tokenizer\Tokenizer\obj\Debug\netcoreapp3.1\Tokenizer.genruntimeconfig.cache

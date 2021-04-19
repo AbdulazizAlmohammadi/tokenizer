@@ -76,6 +76,10 @@ namespace Tokenizer
                 return t.hasMore() && char.IsDigit(t.peek());
             }
 
+            public bool isNumber(Tokenizer t)
+            {
+                return t.hasMore() && (char.IsDigit(t.peek()) || t.peek() == '.');
+            }
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -84,7 +88,7 @@ namespace Tokenizer
                 token.position = t.currentPosition;
                 token.lineNumber = t.lineNumber;
 
-                while(t.hasMore()&& char.IsDigit(t.peek()))
+                while(isNumber(t))
                 {
                     token.value += t.next();
                 }
@@ -102,6 +106,10 @@ namespace Tokenizer
                 return t.hasMore() && char.IsLetter(t.peek());
             }
 
+            public bool isId(Tokenizer t)
+            {
+                return t.hasMore() && (char.IsLetterOrDigit(t.peek()) || t.peek() == '_');
+            }
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -110,7 +118,66 @@ namespace Tokenizer
                 token.position = t.currentPosition;
                 token.lineNumber = t.lineNumber;
 
-                while (t.hasMore() && (char.IsLetterOrDigit(t.peek()) || t.peek()=='_' ))
+                while (isId(t))
+                {
+                    token.value += t.next();
+                }
+                return token;
+            }
+
+        }
+
+        public class ClassTokenizer : Tokenizeable
+        {
+
+
+            public override bool tokenizable(Tokenizer t)
+            {
+                return t.hasMore() && char.IsUpper(t.peek());
+            }
+
+            public bool isClass(Tokenizer t)
+            {
+                return t.hasMore() && (char.IsLetterOrDigit(t.peek()) || t.peek() == '_');
+            }
+
+            public override Token tokenize(Tokenizer t)
+            {
+                Token token = new Token();
+                token.type = "class";
+                token.value = "";
+                token.position = t.currentPosition;
+                token.lineNumber = t.lineNumber;
+
+                while (isClass(t))
+                {
+                    token.value += t.next();
+                }
+                return token;
+            }
+
+        }
+        public class ElseTokenizer : Tokenizeable
+        {
+
+
+            public override bool tokenizable(Tokenizer t)
+            {
+                return t.hasMore();
+            }
+            public bool isElse(Tokenizer t)
+            {
+                return t.hasMore() && !Char.IsLetterOrDigit(t.peek()) && (t.peek() != '/' && t.peek(2) != '/');
+            }
+            public override Token tokenize(Tokenizer t)
+            {
+                Token token = new Token();
+                token.type = "else";
+                token.value = "";
+                token.position = t.currentPosition;
+                token.lineNumber = t.lineNumber;
+
+                while (isElse(t))
                 {
                     token.value += t.next();
                 }
@@ -155,6 +222,11 @@ namespace Tokenizer
                 return t.hasMore() &&( t.peek()=='/' && t.peek(2) == '/');
             }
 
+            public bool isComment(Tokenizer t)
+            {
+                return t.hasMore() && (t.peek() != '\n') && (t.peek() == '/') || char.IsLetterOrDigit(t.peek()) || t.peek()==' ';
+            }
+
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -163,7 +235,7 @@ namespace Tokenizer
                 token.position = t.currentPosition;
                 token.lineNumber = t.lineNumber;
 
-                while (t.hasMore() && (t.peek()!= '\n')&&( t.peek() == '/') || char.IsLetterOrDigit(t.peek()) || char.IsWhiteSpace(t.peek()))
+                while (isComment(t))
                 {
                     token.value += t.next();
                 }
@@ -175,16 +247,40 @@ namespace Tokenizer
 
         static void Main(string[] args)
         {
-            Tokenizer t = new Tokenizer("ggh 348668 k //fdfdsf");
-            Tokenizeable[] handlers = new Tokenizeable[] { new IdTokenizer(), new NumberTokenizer() , new WhiteSpaceTokenizer() , new CommentTokenizer()};
+            //string[] keyWords = {"int"}
+
+
+            string keyWords = "int double float string";
+            Tokenizer t = new Tokenizer(
+                "class Ezz {\n" +
+                "  int X = 5 ; // variable \n" +
+                "  int Y = 20 ; \n" +
+                "  double Val = 2.0 ; \n" +
+                "}");
+
+
+
+
+
+            Tokenizeable[] handlers = new Tokenizeable[] {new ClassTokenizer(), new IdTokenizer(),
+                new NumberTokenizer() , new WhiteSpaceTokenizer() , new CommentTokenizer() , new ElseTokenizer()};
             Token token = t.tokenize(handlers);
             while(token != null)
             {
                 if (token.type == "number")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                }else if (token.type == "id") Console.ForegroundColor = ConsoleColor.Blue;
-                else if(token.type == "comment") Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else if (token.type == "id") {
+                    if (keyWords.Contains(token.value))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                    }
+                    else
+                     Console.ForegroundColor = ConsoleColor.Cyan;
+                }
+                else if (token.type == "comment") Console.ForegroundColor = ConsoleColor.Green;
+                else if (token.type == "class") Console.ForegroundColor = ConsoleColor.Yellow;
                 else Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(token.value);
                 token = t.tokenize(handlers);

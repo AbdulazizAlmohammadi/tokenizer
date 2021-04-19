@@ -167,7 +167,7 @@ namespace Tokenizer
             }
             public bool isElse(Tokenizer t)
             {
-                return t.hasMore() && !Char.IsLetterOrDigit(t.peek()) && (t.peek() != '/' && t.peek(2) != '/');
+                return t.hasMore() && !Char.IsWhiteSpace(t.peek()) && (t.peek() != '/' && t.peek(2) != '/');
             }
             public override Token tokenize(Tokenizer t)
             {
@@ -244,7 +244,85 @@ namespace Tokenizer
 
         }
 
+        public class CommentStarTokenizer : Tokenizeable
+        {
 
+
+            public override bool tokenizable(Tokenizer t)
+            {
+
+                return t.hasMore() && (t.peek() == '/' && t.peek(2) == '*');
+            }
+
+            public bool isCommentStar(Tokenizer t)
+            {
+                return t.hasMore() ;
+            }
+
+            public override Token tokenize(Tokenizer t)
+            {
+                Token token = new Token();
+                token.type = "commentStar";
+                token.value = "";
+                token.position = t.currentPosition;
+                token.lineNumber = t.lineNumber;
+
+                while (isCommentStar(t))
+                {
+                    if((t.peek() == '*' && t.peek(2) == '/'))
+                    {
+                        token.value += t.next();
+                        token.value += t.next();
+                        break;
+
+                    }
+                    else token.value += t.next();
+
+                }
+                return token;
+            }
+
+        }
+
+        public class StringTokenizer : Tokenizeable
+        {
+
+
+            public override bool tokenizable(Tokenizer t)
+            {
+
+                return t.hasMore() && t.peek() == '\"' ;
+            }
+
+            public bool isString(Tokenizer t)
+            {
+                return t.hasMore();
+            }
+
+            public override Token tokenize(Tokenizer t)
+            {
+                Token token = new Token();
+                token.type = "string";
+                token.value = "";
+                token.position = t.currentPosition;
+                token.lineNumber = t.lineNumber;
+
+                while (isString(t))
+                {
+                    if ( t.peek(2) == '\"')
+                    {
+                        token.value += t.next();
+                        token.value += t.next();
+                        break;
+
+                    }
+                    else token.value += t.next();
+
+                }
+                return token;
+            }
+
+        }
         static void Main(string[] args)
         {
             //string[] keyWords = {"int"}
@@ -256,14 +334,19 @@ namespace Tokenizer
                 "  int X = 5 ; // variable \n" +
                 "  int Y = 20 ; \n" +
                 "  double Val = 2.0 ; \n" +
+                "/* \n" +
+                "something here \n" +
+                "may helpfull \n " +
+                "*/ \n" +
+                "string Hello = \" hello \" ;" +
                 "}");
 
 
 
 
 
-            Tokenizeable[] handlers = new Tokenizeable[] {new ClassTokenizer(), new IdTokenizer(),
-                new NumberTokenizer() , new WhiteSpaceTokenizer() , new CommentTokenizer() , new ElseTokenizer()};
+            Tokenizeable[] handlers = new Tokenizeable[] {new ClassTokenizer(), new IdTokenizer(), new StringTokenizer(),
+                new NumberTokenizer() , new WhiteSpaceTokenizer() ,new CommentStarTokenizer() ,new CommentTokenizer() , new ElseTokenizer()};
             Token token = t.tokenize(handlers);
             while(token != null)
             {
@@ -279,8 +362,9 @@ namespace Tokenizer
                     else
                      Console.ForegroundColor = ConsoleColor.Cyan;
                 }
-                else if (token.type == "comment") Console.ForegroundColor = ConsoleColor.Green;
-                else if (token.type == "class") Console.ForegroundColor = ConsoleColor.Yellow;
+                else if (token.type == "comment"|| token.type == "commentStar") Console.ForegroundColor = ConsoleColor.Green;
+                else if (token.type == "class") Console.ForegroundColor = ConsoleColor.Blue;
+                else if (token.type == "string") Console.ForegroundColor = ConsoleColor.Yellow;
                 else Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(token.value);
                 token = t.tokenize(handlers);

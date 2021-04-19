@@ -5,6 +5,7 @@ namespace Tokenizer
 {
     class Program
     {
+        //Abdulaziz Almohammadi Code
         public class Token
         {
             public string type;
@@ -323,6 +324,81 @@ namespace Tokenizer
             }
 
         }
+
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        
+
+
+
+        //Mohammed Rashed Code 
+        public class HashtagTokenizer : Tokenizeable
+        {
+
+            public override bool tokenizable(Tokenizer t)
+            {
+                return t.hasMore() && t.peek() == '#' && char.IsLetterOrDigit(t.peek(2));
+            }
+
+            public override Token tokenize(Tokenizer t)
+            {
+                Token token = new Token();
+                token.value = "";
+                token.type = "hashtag";
+                token.position = t.currentPosition;
+                token.lineNumber = t.lineNumber;
+                while (t.hasMore() && (Char.IsLetterOrDigit(t.peek()) || t.peek() == '#'))
+                {
+                    token.value += t.next();
+                }
+                return token;
+            }
+        }
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+
+        //Sultan Alzoubi Code 
+        public class HTMLTokenizer : Tokenizeable
+        {
+            public override bool tokenizable(Tokenizer tokenizer)
+            {
+                return tokenizer.hasMore() && tokenizer.peek() == '<';
+            }
+            
+            
+
+            public override Token tokenize(Tokenizer tokenizer)
+            {
+                Token token = new Token();
+                token.value = "";
+                token.type = "HTMLTag";
+                token.position = tokenizer.currentPosition;
+                token.lineNumber = tokenizer.lineNumber;
+
+                while (tokenizer.hasMore() && (char.IsLetter(tokenizer.peek()) || "</>".Contains(tokenizer.peek())))
+                {
+                    token.value += tokenizer.next();
+                    if (tokenizer.peek() == '>')
+                    {
+                        token.value += tokenizer.next();
+                        break;
+                    }
+                }
+                // "<Header> Hi everyone <Div> inside a Div </Div> </Header>"
+                return token;
+            }
+        }
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+        //////////////////////////////////////////
+
+
+
         static void Main(string[] args)
         {
             //string[] keyWords = {"int"}
@@ -336,9 +412,9 @@ namespace Tokenizer
                 "  double Val = 2.0 ; \n" +
                 "/* \n" +
                 "something here \n" +
-                "may helpfull \n " +
+                "may helpfull \n" +
                 "*/ \n" +
-                "string Hello = \" hello \" ;" +
+                "  string Hello = \" hello \" ;\n" +
                 "}");
 
 
@@ -346,7 +422,7 @@ namespace Tokenizer
 
 
             Tokenizeable[] handlers = new Tokenizeable[] {new ClassTokenizer(), new IdTokenizer(), new StringTokenizer(),
-                new NumberTokenizer() , new WhiteSpaceTokenizer() ,new CommentStarTokenizer() ,new CommentTokenizer() , new ElseTokenizer()};
+                new NumberTokenizer() , new WhiteSpaceTokenizer() ,new CommentStarTokenizer() ,new CommentTokenizer() ,new HTMLTokenizer() ,new HashtagTokenizer(), new ElseTokenizer()};
             Token token = t.tokenize(handlers);
             while(token != null)
             {

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Tokenizer
 {
-    class Program
+    internal class Program
     {
         //Abdulaziz Almohammadi Code
         public class Token
@@ -13,9 +12,11 @@ namespace Tokenizer
             public int position;
             public int lineNumber;
         }
+
         public abstract class Tokenizeable
         {
             public abstract bool tokenizable(Tokenizer source);
+
             public abstract Token tokenize(Tokenizer source);
         }
 
@@ -33,7 +34,8 @@ namespace Tokenizer
                 this.lineNumber = 1;
             }
 
-            public char peek(int numOfPosition = 1) {
+            public char peek(int numOfPosition = 1)
+            {
                 if (this.hasMore(numOfPosition))
                 {
                     return this.input[this.currentPosition + numOfPosition];
@@ -47,13 +49,17 @@ namespace Tokenizer
             public char next()
             {
                 char currentChar = this.input[++this.currentPosition];
-                if(currentChar == '\n')
+                if (currentChar == '\n')
                 {
                     this.lineNumber++;
                 }
                 return currentChar;
             }
-            public bool hasMore(int num =1) { return (this.currentPosition + num) < this.input.Length; }
+
+            public bool hasMore(int num = 1)
+            {
+                return (this.currentPosition + num) < this.input.Length;
+            }
 
             public Token tokenize(Tokenizeable[] handelrs)
             {
@@ -66,12 +72,10 @@ namespace Tokenizer
                 }
                 return null;
             }
-
         }
+
         public class NumberTokenizer : Tokenizeable
         {
-            
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore() && char.IsDigit(t.peek());
@@ -81,6 +85,7 @@ namespace Tokenizer
             {
                 return t.hasMore() && (char.IsDigit(t.peek()) || t.peek() == '.');
             }
+
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -89,19 +94,16 @@ namespace Tokenizer
                 token.position = t.currentPosition;
                 token.lineNumber = t.lineNumber;
 
-                while(isNumber(t))
+                while (isNumber(t))
                 {
                     token.value += t.next();
                 }
                 return token;
             }
-
         }
 
         public class IdTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore() && char.IsLetter(t.peek());
@@ -111,6 +113,7 @@ namespace Tokenizer
             {
                 return t.hasMore() && (char.IsLetterOrDigit(t.peek()) || t.peek() == '_');
             }
+
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -125,13 +128,10 @@ namespace Tokenizer
                 }
                 return token;
             }
-
         }
 
         public class ClassTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore() && char.IsUpper(t.peek());
@@ -156,20 +156,20 @@ namespace Tokenizer
                 }
                 return token;
             }
-
         }
+
         public class ElseTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore();
             }
+
             public bool isElse(Tokenizer t)
             {
                 return t.hasMore() && !Char.IsWhiteSpace(t.peek()) && (t.peek() != '/' && t.peek(2) != '/');
             }
+
             public override Token tokenize(Tokenizer t)
             {
                 Token token = new Token();
@@ -184,13 +184,10 @@ namespace Tokenizer
                 }
                 return token;
             }
-
         }
 
         public class WhiteSpaceTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore() && char.IsWhiteSpace(t.peek());
@@ -210,22 +207,18 @@ namespace Tokenizer
                 }
                 return token;
             }
-
         }
 
         public class CommentTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
-                
-                return t.hasMore() &&( t.peek()=='/' && t.peek(2) == '/');
+                return t.hasMore() && (t.peek() == '/' && t.peek(2) == '/');
             }
 
             public bool isComment(Tokenizer t)
             {
-                return t.hasMore() && (t.peek() != '\n') && (t.peek() == '/') || char.IsLetterOrDigit(t.peek()) || t.peek()==' ';
+                return t.hasMore() && (t.peek() != '\n') && (t.peek() == '/') || char.IsLetterOrDigit(t.peek()) || t.peek() == ' ';
             }
 
             public override Token tokenize(Tokenizer t)
@@ -242,22 +235,18 @@ namespace Tokenizer
                 }
                 return token;
             }
-
         }
 
         public class CommentStarTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
-
                 return t.hasMore() && (t.peek() == '/' && t.peek(2) == '*');
             }
 
             public bool isCommentStar(Tokenizer t)
             {
-                return t.hasMore() ;
+                return t.hasMore();
             }
 
             public override Token tokenize(Tokenizer t)
@@ -270,29 +259,23 @@ namespace Tokenizer
 
                 while (isCommentStar(t))
                 {
-                    if((t.peek() == '*' && t.peek(2) == '/'))
+                    if ((t.peek() == '*' && t.peek(2) == '/'))
                     {
                         token.value += t.next();
                         token.value += t.next();
                         break;
-
                     }
                     else token.value += t.next();
-
                 }
                 return token;
             }
-
         }
 
         public class StringTokenizer : Tokenizeable
         {
-
-
             public override bool tokenizable(Tokenizer t)
             {
-
-                return t.hasMore() && t.peek() == '\"' ;
+                return t.hasMore() && t.peek() == '\"';
             }
 
             public bool isString(Tokenizer t)
@@ -310,33 +293,26 @@ namespace Tokenizer
 
                 while (isString(t))
                 {
-                    if ( t.peek(2) == '\"')
+                    if (t.peek(2) == '\"')
                     {
                         token.value += t.next();
                         token.value += t.next();
                         break;
-
                     }
                     else token.value += t.next();
-
                 }
                 return token;
             }
-
         }
 
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
-        
 
-
-
-        //Mohammed Rashed Code 
+        //Mohammed Rashed Code
         public class HashtagTokenizer : Tokenizeable
         {
-
             public override bool tokenizable(Tokenizer t)
             {
                 return t.hasMore() && t.peek() == '#' && char.IsLetterOrDigit(t.peek(2));
@@ -356,20 +332,19 @@ namespace Tokenizer
                 return token;
             }
         }
+
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
 
-        //Sultan Alzoubi Code 
+        //Sultan Alzoubi Code
         public class HTMLTokenizer : Tokenizeable
         {
             public override bool tokenizable(Tokenizer tokenizer)
             {
                 return tokenizer.hasMore() && tokenizer.peek() == '<';
             }
-            
-            
 
             public override Token tokenize(Tokenizer tokenizer)
             {
@@ -392,17 +367,52 @@ namespace Tokenizer
                 return token;
             }
         }
+
+        public class DecimalValueTokenizer : Tokenizeable
+        {
+            public override bool tokenizable(Tokenizer tokenizer)
+            {
+                return tokenizer.hasMore() && char.IsDigit(tokenizer.peek());
+            }
+
+            public override Token tokenize(Tokenizer tokenizer)
+            {
+                bool counter = false;
+                // "122.22 hi everyone 1.2 1."
+                Token token = new Token();
+                token.value = "";
+                token.type = "Decimal";
+                token.position = tokenizer.currentPosition;
+                token.lineNumber = tokenizer.lineNumber;
+                while (tokenizer.hasMore() && (char.IsDigit(tokenizer.peek()) || tokenizer.peek() == '.'))
+                {
+                    if (char.IsDigit(tokenizer.peek()))
+                        token.value += tokenizer.next();
+                    else if (tokenizer.peek() == '.' && counter == false)
+                    {
+                        token.value += tokenizer.next();
+                        counter = true;
+                    }
+                    else
+                    {
+                        //Console.WriteLine("error");
+                        //throw new Exception("error");
+                        tokenizer.next();
+                        //return null;
+                    }
+                }
+                return token;
+            }
+        }
+
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
         //////////////////////////////////////////
 
-
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             //string[] keyWords = {"int"}
-
 
             string keyWords = "int double float string";
             Tokenizer t = new Tokenizer(
@@ -417,28 +427,25 @@ namespace Tokenizer
                 "  string Hello = \" hello \" ;\n" +
                 "}");
 
-
-
-
-
             Tokenizeable[] handlers = new Tokenizeable[] {new ClassTokenizer(), new IdTokenizer(), new StringTokenizer(),
-                new NumberTokenizer() , new WhiteSpaceTokenizer() ,new CommentStarTokenizer() ,new CommentTokenizer() ,new HTMLTokenizer() ,new HashtagTokenizer(), new ElseTokenizer()};
+                new NumberTokenizer() ,new DecimalValueTokenizer(), new WhiteSpaceTokenizer() ,new CommentStarTokenizer() ,new CommentTokenizer() ,new HTMLTokenizer() ,new HashtagTokenizer(), new ElseTokenizer()};
             Token token = t.tokenize(handlers);
-            while(token != null)
+            while (token != null)
             {
                 if (token.type == "number")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
-                else if (token.type == "id") {
+                else if (token.type == "id")
+                {
                     if (keyWords.Contains(token.value))
                     {
                         Console.ForegroundColor = ConsoleColor.Magenta;
                     }
                     else
-                     Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                 }
-                else if (token.type == "comment"|| token.type == "commentStar") Console.ForegroundColor = ConsoleColor.Green;
+                else if (token.type == "comment" || token.type == "commentStar") Console.ForegroundColor = ConsoleColor.Green;
                 else if (token.type == "class") Console.ForegroundColor = ConsoleColor.Blue;
                 else if (token.type == "string") Console.ForegroundColor = ConsoleColor.Yellow;
                 else Console.ForegroundColor = ConsoleColor.White;
@@ -447,15 +454,6 @@ namespace Tokenizer
             }
             Console.ForegroundColor = ConsoleColor.White;
         }
-
-
-
-
-
-
-
-
-
 
         /*static List<string> tokenizer(string passage)
         {
@@ -476,7 +474,6 @@ namespace Tokenizer
                     ++i;
                     while (i < passage.Length && !char.IsWhiteSpace(passage[i])&& token.Length<7 && hex.Contains(passage[i]))
                     {
-                        
                             token += passage[i];
                         i++;
                     }
@@ -484,7 +481,6 @@ namespace Tokenizer
                     {
                         token += "0";
                     }
-
 
                     Console.WriteLine(token);
                 }
@@ -494,14 +490,13 @@ namespace Tokenizer
             return ls;
         }
 
-
          static List<string> tokenizer2(string value)
         {
             if (value == null || value.Trim().Length == 0) return null;
             List<string> result = new List<string> { };
             string world="";
-            int i = 0; 
-            
+            int i = 0;
+
             while(i < value.Length)
             {
                 // do action
@@ -511,7 +506,6 @@ namespace Tokenizer
                     while (i < value.Length && char.IsDigit(value[i]))
                     {
                         world += value[i++];
-                        
                     }
                     result.Add(world);
                 }
@@ -520,7 +514,6 @@ namespace Tokenizer
                     while (i < value.Length && (char.IsLetterOrDigit(value[i]) || value[i] == '_'))
                     {
                          world += value[i++];
-                        
                     }
                     result.Add(world);
                 }
@@ -531,9 +524,6 @@ namespace Tokenizer
             return result;
         }
 
-
         */
     }
-
-
 }
